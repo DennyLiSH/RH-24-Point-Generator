@@ -1,15 +1,117 @@
+# ============== 通用规则 ==============
+
+# --- IDE 和编辑器 ---
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+*.sublime-project
+*.sublime-workspace
 *.iml
-.gradle
-/local.properties
-/.idea/caches
-/.idea/libraries
-/.idea/modules.xml
-/.idea/workspace.xml
-/.idea/navEditor.xml
-/.idea/assetWizardSettings.xml
+out/
+
+# --- 操作系统 ---
 .DS_Store
-/build
-/captures
-.externalNativeBuild
-.cxx
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# --- 敏感信息 ---
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.crt
+credentials.*
+secrets.*
+
+# --- 日志和临时文件 ---
+*.log
+logs/
+tmp/
+temp/
+*.tmp
+*.temp
+*.bak
+
+# --- 压缩包 ---
+*.zip
+*.tar.gz
+*.rar
+*.7z
+
+# ============== Kotlin/Android ==============
+
+# --- 编译产物 ---
+*.class
+*.jar
+*.war
+*.nar
+*.ear
+*.apk
+*.ap_
+*.aab
+*.dex
+
+# --- Gradle ---
+.gradle/
+**/build/
+!src/**/build/
+gradle-app.setting
+.gradletasknamecache
+!gradle-wrapper.jar
+
+# --- Kotlin 特有 ---
+*.kt.swp
+*.kts.swp
+*.ktm
+*.kotlin_module
+.kotlin/
+
+# --- Android Studio ---
+.navigation/
+captures/
+.externalNativeBuild/
+.cxx/
+
+# --- Local 配置 ---
 local.properties
+
+# --- Compose ---
+*.compose.preview
+
+# --- 测试输出 ---
+test-results/
+*.test
+coroutine-debug.log
+
+# ============== 项目特定 ==============
+
+# --- Firebase ---
+google-services.json
+
+# --- Fastlane ---
+fastlane/report.xml
+fastlane/Preview.html
+fastlane/screenshots
+fastlane/test_output
+
+# --- Lint ---
+lint/intermediates/
+lint/generated/
+lint/outputs/
+lint/tmp/
+lint/reports/
+
+# --- Keystore (取消注释以忽略) ---
+#*.jks
+#*.keystore
+
+.claude/
+_*/
