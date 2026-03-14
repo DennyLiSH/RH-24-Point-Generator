@@ -1,6 +1,5 @@
 package com.rabbithole.my24points.ui.theme
 
-import android.app.Activity
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
@@ -12,32 +11,56 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
 
 private val DarkColorScheme = darkColorScheme(
-    primary = Purple80,
-    secondary = PurpleGrey80,
-    tertiary = Pink80
+    primary = GamePrimaryDark,
+    onPrimary = GameOnPrimaryDark,
+    primaryContainer = GamePrimaryContainerDark,
+    onPrimaryContainer = GameOnPrimaryContainerDark,
+    secondary = GameSecondaryDark,
+    onSecondary = GameOnSecondaryDark,
+    secondaryContainer = GameSecondaryContainerDark,
+    onSecondaryContainer = GameOnSecondaryContainerDark,
+    tertiary = GameTertiaryDark,
+    onTertiary = GameOnTertiaryDark,
+    tertiaryContainer = GameTertiaryContainerDark,
+    onTertiaryContainer = GameOnTertiaryContainerDark,
+    error = GameErrorDark,
+    errorContainer = GameErrorContainerDark,
+    onError = GameOnErrorDark,
+    onErrorContainer = GameOnErrorContainerDark,
+    background = GameBackgroundDark,
+    onBackground = GameOnBackgroundDark,
+    surface = GameSurfaceDark,
+    onSurface = GameOnSurfaceDark
 )
 
 private val LightColorScheme = lightColorScheme(
-    primary = Purple40,
-    secondary = PurpleGrey40,
-    tertiary = Pink40
-
-    /* Other default colors to override
-    background = Color(0xFFFFFBFE),
-    surface = Color(0xFFFFFBFE),
-    onPrimary = Color.White,
-    onSecondary = Color.White,
-    onTertiary = Color.White,
-    onBackground = Color(0xFF1C1B1F),
-    onSurface = Color(0xFF1C1B1F),
-    */
+    primary = GamePrimary,
+    onPrimary = GameOnPrimary,
+    primaryContainer = GamePrimaryContainer,
+    onPrimaryContainer = GameOnPrimaryContainer,
+    secondary = GameSecondary,
+    onSecondary = GameOnSecondary,
+    secondaryContainer = GameSecondaryContainer,
+    onSecondaryContainer = GameOnSecondaryContainer,
+    tertiary = GameTertiary,
+    onTertiary = GameOnTertiary,
+    tertiaryContainer = GameTertiaryContainer,
+    onTertiaryContainer = GameOnTertiaryContainer,
+    error = GameError,
+    errorContainer = GameErrorContainer,
+    onError = GameOnError,
+    onErrorContainer = GameOnErrorContainer,
+    background = GameBackground,
+    onBackground = GameOnBackground,
+    surface = GameSurface,
+    onSurface = GameOnSurface
 )
 
 @Composable
 fun _24PointsTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
     // Dynamic color is available on Android 12+
-    dynamicColor: Boolean = true,
+    dynamicColor: Boolean = false, // 禁用动态颜色以使用自定义配色
     content: @Composable () -> Unit
 ) {
     val colorScheme = when {
@@ -45,7 +68,6 @@ fun _24PointsTheme(
             val context = LocalContext.current
             if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
         }
-
         darkTheme -> DarkColorScheme
         else -> LightColorScheme
     }
