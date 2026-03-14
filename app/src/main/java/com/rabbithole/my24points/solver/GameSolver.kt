@@ -12,9 +12,82 @@ object GameSolver {
     private val operators = charArrayOf('+', '-', '*', '/')
 
     /**
-     * 表达式结果，包含计算值和表达式字符串
+     * 表达式AST节点
      */
-    private data class Expr(val value: Double, val str: String)
+    sealed class ExprNode {
+        data class Number(val value: Int) : ExprNode()
+        data class BinaryOp(
+            val left: ExprNode,
+            val operator: Char,
+            val right: ExprNode
+        ) : ExprNode()
+
+        companion object {
+            private val precedence = mapOf('+' to 1, '-' to 1, '*' to 2, '/' to 2)
+            fun getPrecedence(op: Char): Int = precedence[op] ?: 0
+        }
+
+        /**
+         * 生成最小括号表达式字符串
+         */
+        fun toMinimalString(parentOp: Char? = null, isRightChild: Boolean = false): String {
+            return when (this) {
+                is Number -> value.toString()
+                is BinaryOp -> {
+                    val leftStr = left.toMinimalString(operator, false)
+                    val rightStr = right.toMinimalString(operator, true)
+
+                    val needParens = if (parentOp == null) {
+                        false
+                    } else {
+                        val parentPrec = getPrecedence(parentOp)
+                        val myPrec = getPrecedence(operator)
+                        when {
+                            // 优先级低于父节点，需要括号
+                            myPrec < parentPrec -> true
+                            // 优先级相等且是右子节点，父节点是减法或除法时需要括号
+                            myPrec == parentPrec && isRightChild &&
+                                (parentOp == '-' || parentOp == '/') -> true
+                            else -> false
+                        }
+                    }
+
+                    val expr = "$leftStr $operator $rightStr"
+                    if (needParens) "($expr)" else expr
+                }
+            }
+        }
+
+        /**
+         * 计算乘法优先得分
+         * 当乘除的操作数是加减运算时，说明乘除优先执行，得分更高
+         */
+        fun multiplicationPriorityScore(): Int {
+            return when (this) {
+                is Number -> 0
+                is BinaryOp -> {
+                    val leftScore = left.multiplicationPriorityScore()
+                    val rightScore = right.multiplicationPriorityScore()
+                    val selfScore = when (operator) {
+                        '*', '/' -> {
+                            val leftBonus = if (left is BinaryOp &&
+                                (left.operator == '+' || left.operator == '-')) 2 else 0
+                            val rightBonus = if (right is BinaryOp &&
+                                (right.operator == '+' || right.operator == '-')) 2 else 0
+                            leftBonus + rightBonus
+                        }
+                        else -> 0
+                    }
+                    leftScore + rightScore + selfScore
+                }
+            }
+        }
+    }
+
+    /**
+     * 表达式结果，包含计算值和AST节点
+     */
+    private data class Expr(val value: Double, val node: ExprNode)
 
     /**
      * 求解结果
@@ -36,23 +109,34 @@ object GameSolver {
             return Result(false, null)
         }
 
+        val allSolutions = mutableListOf<Expr>()
         val perms = mutableListOf<List<Int>>()
         generatePermutations(numbers.toMutableList(), 0, perms)
 
         for (perm in perms) {
-            val expr = solveWithPermutation(perm)
-            if (expr != null && abs(expr.value - TARGET) < EPSILON) {
-                return Result(true, expr.str)
-            }
+            solveWithPermutation(perm, allSolutions)
         }
 
-        return Result(false, null)
+        if (allSolutions.isEmpty()) {
+            return Result(false, null)
+        }
+
+        // 去重并排序：乘法优先得分降序 → 括号数量升序
+        val best = allSolutions
+            .distinctBy { it.node.toMinimalString() }
+            .maxWithOrNull(compareBy<Expr> {
+                it.node.multiplicationPriorityScore()
+            }.thenBy {
+                it.node.toMinimalString().count { c -> c == '(' || c == ')' }
+            })
+
+        return Result(true, best?.node?.toMinimalString())
     }
 
     /**
      * 对特定排列尝试所有括号结构和运算符组合
      */
-    private fun solveWithPermutation(nums: List<Int>): Expr? {
+    private fun solveWithPermutation(nums: List<Int>, solutions: MutableList<Expr>) {
         val a = nums[0].toDouble()
         val b = nums[1].toDouble()
         val c = nums[2].toDouble()
@@ -66,7 +150,14 @@ object GameSolver {
                         compute(ab.value, op2, c)?.let { abc ->
                             compute(abc.value, op3, d)?.let { abcd ->
                                 if (abs(abcd.value - TARGET) < EPSILON) {
-                                    return Expr(abcd.value, "((${nums[0]} $op1 ${nums[1]}) $op2 ${nums[2]}) $op3 ${nums[3]}")
+                                    val node = ExprNode.BinaryOp(
+                                        ExprNode.BinaryOp(
+                                            ExprNode.BinaryOp(
+                                                ExprNode.Number(nums[0]), op1, ExprNode.Number(nums[1])
+                                            ), op2, ExprNode.Number(nums[2])
+                                        ), op3, ExprNode.Number(nums[3])
+                                    )
+                                    solutions.add(Expr(abcd.value, node))
                                 }
                             }
                         }
@@ -77,7 +168,15 @@ object GameSolver {
                         compute(a, op1, bc.value)?.let { abc ->
                             compute(abc.value, op3, d)?.let { abcd ->
                                 if (abs(abcd.value - TARGET) < EPSILON) {
-                                    return Expr(abcd.value, "(${nums[0]} $op1 (${nums[1]} $op2 ${nums[2]})) $op3 ${nums[3]}")
+                                    val node = ExprNode.BinaryOp(
+                                        ExprNode.BinaryOp(
+                                            ExprNode.Number(nums[0]), op1,
+                                            ExprNode.BinaryOp(
+                                                ExprNode.Number(nums[1]), op2, ExprNode.Number(nums[2])
+                                            )
+                                        ), op3, ExprNode.Number(nums[3])
+                                    )
+                                    solutions.add(Expr(abcd.value, node))
                                 }
                             }
                         }
@@ -88,7 +187,15 @@ object GameSolver {
                         compute(c, op3, d)?.let { cd ->
                             compute(ab.value, op2, cd.value)?.let { result ->
                                 if (abs(result.value - TARGET) < EPSILON) {
-                                    return Expr(result.value, "(${nums[0]} $op1 ${nums[1]}) $op2 (${nums[2]} $op3 ${nums[3]})")
+                                    val node = ExprNode.BinaryOp(
+                                        ExprNode.BinaryOp(
+                                            ExprNode.Number(nums[0]), op1, ExprNode.Number(nums[1])
+                                        ), op2,
+                                        ExprNode.BinaryOp(
+                                            ExprNode.Number(nums[2]), op3, ExprNode.Number(nums[3])
+                                        )
+                                    )
+                                    solutions.add(Expr(result.value, node))
                                 }
                             }
                         }
@@ -99,7 +206,15 @@ object GameSolver {
                         compute(bc.value, op3, d)?.let { bcd ->
                             compute(a, op1, bcd.value)?.let { result ->
                                 if (abs(result.value - TARGET) < EPSILON) {
-                                    return Expr(result.value, "${nums[0]} $op1 ((${nums[1]} $op2 ${nums[2]}) $op3 ${nums[3]})")
+                                    val node = ExprNode.BinaryOp(
+                                        ExprNode.Number(nums[0]), op1,
+                                        ExprNode.BinaryOp(
+                                            ExprNode.BinaryOp(
+                                                ExprNode.Number(nums[1]), op2, ExprNode.Number(nums[2])
+                                            ), op3, ExprNode.Number(nums[3])
+                                        )
+                                    )
+                                    solutions.add(Expr(result.value, node))
                                 }
                             }
                         }
@@ -110,7 +225,16 @@ object GameSolver {
                         compute(b, op2, cd.value)?.let { bcd ->
                             compute(a, op1, bcd.value)?.let { result ->
                                 if (abs(result.value - TARGET) < EPSILON) {
-                                    return Expr(result.value, "${nums[0]} $op1 (${nums[1]} $op2 (${nums[2]} $op3 ${nums[3]}))")
+                                    val node = ExprNode.BinaryOp(
+                                        ExprNode.Number(nums[0]), op1,
+                                        ExprNode.BinaryOp(
+                                            ExprNode.Number(nums[1]), op2,
+                                            ExprNode.BinaryOp(
+                                                ExprNode.Number(nums[2]), op3, ExprNode.Number(nums[3])
+                                            )
+                                        )
+                                    )
+                                    solutions.add(Expr(result.value, node))
                                 }
                             }
                         }
@@ -118,7 +242,6 @@ object GameSolver {
                 }
             }
         }
-        return null
     }
 
     /**
@@ -132,7 +255,7 @@ object GameSolver {
             '/' -> if (abs(b) < EPSILON) return null else a / b
             else -> return null
         }
-        return Expr(result, "")
+        return Expr(result, ExprNode.Number(0)) // node 在上层构建
     }
 
     /**
