@@ -26,22 +26,25 @@ class GameViewModel : ViewModel() {
     val state = _state.asStateFlow()
 
     /**
-     * 生成新题目
+     * 生成新题目（保证有解）
      */
     fun generateNewPuzzle() {
         _state.update { it.copy(isGenerating = true) }
 
-        // 生成4个1-13的随机数
-        val numbers = List(4) { Random.nextInt(1, 14) }
+        var numbers: List<Int>
+        var result: GameSolver.Result
 
-        // 求解
-        val result = GameSolver.solve(numbers)
+        // 循环生成直到找到有解的题目
+        do {
+            numbers = List(4) { Random.nextInt(1, 14) }
+            result = GameSolver.solve(numbers)
+        } while (!result.solvable)
 
         _state.update {
             GameState(
                 numbers = numbers,
                 answer = result.expression,
-                solvable = result.solvable,
+                solvable = true, // 恒为 true
                 showAnswer = false,
                 isGenerating = false
             )

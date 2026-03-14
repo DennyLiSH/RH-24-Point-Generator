@@ -59,6 +59,49 @@ object GameSolver {
         }
 
         /**
+         * 生成友好的表达式字符串，避免中间结果为负数
+         * 核心转换：a - (b - c) -> (c - b) + a
+         */
+        fun toFriendlyString(parentOp: Char? = null, isRightChild: Boolean = false): String {
+            return when (this) {
+                is Number -> value.toString()
+                is BinaryOp -> {
+                    // 检测 a - (b - c) 模式，转换为 (c - b) + a
+                    if (operator == '-' && right is BinaryOp && right.operator == '-') {
+                        val a = left
+                        val b = right.left
+                        val c = right.right
+
+                        // 构建新的表达式：(c - b) + a
+                        val newLeft = BinaryOp(c, '-', b)  // (c - b)
+                        val newExpr = BinaryOp(newLeft, '+', a)  // (c - b) + a
+                        return newExpr.toFriendlyString(parentOp, isRightChild)
+                    }
+
+                    // 默认处理逻辑
+                    val leftStr = left.toFriendlyString(operator, false)
+                    val rightStr = right.toFriendlyString(operator, true)
+
+                    val needParens = if (parentOp == null) {
+                        false
+                    } else {
+                        val parentPrec = getPrecedence(parentOp)
+                        val myPrec = getPrecedence(operator)
+                        when {
+                            myPrec < parentPrec -> true
+                            myPrec == parentPrec && isRightChild &&
+                                (parentOp == '-' || parentOp == '/') -> true
+                            else -> false
+                        }
+                    }
+
+                    val expr = "$leftStr $operator $rightStr"
+                    if (needParens) "($expr)" else expr
+                }
+            }
+        }
+
+        /**
          * 计算乘法优先得分
          * 当乘除的操作数是加减运算时，说明乘除优先执行，得分更高
          */
@@ -123,14 +166,14 @@ object GameSolver {
 
         // 去重并排序：乘法优先得分降序 → 括号数量升序
         val best = allSolutions
-            .distinctBy { it.node.toMinimalString() }
+            .distinctBy { it.node.toFriendlyString() }
             .maxWithOrNull(compareBy<Expr> {
                 it.node.multiplicationPriorityScore()
             }.thenBy {
-                it.node.toMinimalString().count { c -> c == '(' || c == ')' }
+                it.node.toFriendlyString().count { c -> c == '(' || c == ')' }
             })
 
-        return Result(true, best?.node?.toMinimalString())
+        return Result(true, best?.node?.toFriendlyString())
     }
 
     /**
