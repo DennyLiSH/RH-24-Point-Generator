@@ -5,79 +5,49 @@
     android:viewportWidth="108"
     android:viewportHeight="108">
 
-    <!-- 背景 - 透明 -->
-    <path
-        android:pathData="M0,0h108v108h-108z"
-        android:fillColor="#00000000" />
+    <!-- 数字 "2" - 位于左侧 (x: 20-46) -->
+    <!-- 使用 7 段式数码管风格 -->
 
-    <!-- 数字 2 - 左边，在下层 (蓝色 #2196F3) -->
-    <!-- 简洁几何风格的数字2 -->
+    <!-- 2: 顶部横线 -->
     <path
         android:fillColor="#FF2196F3"
-        android:pathData="
-            M22,34
-            L48,34
-            L48,42
-            L48,48
-            Q48,54 42,54
-            L32,54
-            L32,56
-            L46,56
-            Q48,56 48,58
-            L48,66
-            Q48,72 42,72
-            L28,72
-            Q22,72 22,66
-            L22,62
-            L30,62
-            L30,64
-            L40,64
-            L40,60
-            L26,60
-            Q22,60 22,54
-            L22,46
-            Q22,40 28,40
-            L40,40
-            L40,46
-            L30,46
-            L30,44
-            L28,44
-            Q26,44 26,46
-            L26,52
-            L44,52
-            L44,48
-            L26,48
-            L26,46
-            Z" />
+        android:pathData="M22,26 L46,26 L46,32 L22,32 Z" />
 
-    <!-- 数字 4 - 右边，在上层，与2重叠 (蓝色 #2196F3) -->
-    <!-- 简洁几何风格的数字4 -->
+    <!-- 2: 右上竖线 -->
     <path
         android:fillColor="#FF2196F3"
-        android:pathData="
-            M58,32
-            L58,48
-            L64,48
-            L64,58
-            Q64,64 58,64
-            L54,64
-            L54,74
-            Q54,80 48,80
-            L44,80
-            Q38,80 38,74
-            L64,74
-            L64,64
-            L22,64
-            Q18,64 18,58
-            L18,52
-            Q18,46 22,46
-            L48,46
-            L58,32
-            Z
-            M48,52
-            L26,52
-            L26,58
-            L48,58
-            Z" />
+        android:pathData="M40,26 L46,26 L46,50 L40,50 Z" />
+
+    <!-- 2: 中间横线 -->
+    <path
+        android:fillColor="#FF2196F3"
+        android:pathData="M22,48 L46,48 L46,54 L22,54 Z" />
+
+    <!-- 2: 左下竖线 -->
+    <path
+        android:fillColor="#FF2196F3"
+        android:pathData="M22,48 L28,48 L28,72 L22,72 Z" />
+
+    <!-- 2: 底部横线 -->
+    <path
+        android:fillColor="#FF2196F3"
+        android:pathData="M22,70 L46,70 L46,76 L22,76 Z" />
+
+    <!-- 数字 "4" - 位于右侧 (x: 56-82) -->
+
+    <!-- 4: 左上竖线 -->
+    <path
+        android:fillColor="#FF2196F3"
+        android:pathData="M58,26 L64,26 L64,54 L58,54 Z" />
+
+    <!-- 4: 中间横线 -->
+    <path
+        android:fillColor="#FF2196F3"
+        android:pathData="M58,48 L82,48 L82,54 L58,54 Z" />
+
+    <!-- 4: 右侧竖线 (从上到下) -->
+    <path
+        android:fillColor="#FF2196F3"
+        android:pathData="M76,26 L82,26 L82,76 L76,76 Z" />
 
 </vector>
