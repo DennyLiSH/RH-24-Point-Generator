@@ -44,9 +44,11 @@ class GameSolverTest {
     }
 
     @Test
-    fun `solve returns unsolvable for 10-10-4-4`() {
+    fun `solve returns solvable for 10-10-4-4`() {
+        // (10 * 10 - 4) / 4 = 24
         val result = GameSolver.solve(listOf(10, 10, 4, 4))
-        assertFalse(result.solvable)
+        assertTrue(result.solvable)
+        assertNotNull(result.expression)
     }
 
     @Test
@@ -82,9 +84,11 @@ class GameSolverTest {
     }
 
     @Test
-    fun `solve with 5-5-5-5 returns unsolvable`() {
+    fun `solve with 5-5-5-5 returns solvable`() {
+        // 5 * 5 - 5 / 5 = 24
         val result = GameSolver.solve(listOf(5, 5, 5, 5))
-        assertFalse(result.solvable)
+        assertTrue(result.solvable)
+        assertNotNull(result.expression)
     }
 
     @Test
