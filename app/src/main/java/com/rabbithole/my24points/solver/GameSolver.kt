@@ -78,6 +78,18 @@ object GameSolver {
                         return newExpr.toFriendlyString(parentOp, isRightChild)
                     }
 
+                    // 检测 a / (b / c) 模式，转换为 a * (c / b)
+                    if (operator == '/' && right is BinaryOp && right.operator == '/') {
+                        val a = left
+                        val b = right.left
+                        val c = right.right
+
+                        // 构建新的表达式：a * (c / b)
+                        val newRight = BinaryOp(c, '/', b)  // (c / b)
+                        val newExpr = BinaryOp(a, '*', newRight)  // a * (c / b)
+                        return newExpr.toFriendlyString(parentOp, isRightChild)
+                    }
+
                     // 默认处理逻辑
                     val leftStr = left.toFriendlyString(operator, false)
                     val rightStr = right.toFriendlyString(operator, true)
