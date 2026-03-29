@@ -14,7 +14,11 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
+import com.rabbithole.my24points.R
 
 /**
  * 答案卡片组件
@@ -26,8 +30,16 @@ fun AnswerCard(
     hasSolution: Boolean,
     modifier: Modifier = Modifier
 ) {
+    val answerLabel = stringResource(R.string.answer_label)
+    val noSolutionLabel = stringResource(R.string.no_solution_label)
+    val noSolutionMessage = stringResource(R.string.no_solution_message)
+
     Card(
-        modifier = modifier.fillMaxWidth(0.9f),
+        modifier = modifier
+            .fillMaxWidth(0.9f)
+            .semantics {
+                contentDescription = if (hasSolution) "$answerLabel: $answer = 24" else noSolutionLabel
+            },
         colors = CardDefaults.cardColors(
             containerColor = if (hasSolution)
                 MaterialTheme.colorScheme.secondaryContainer
@@ -44,7 +56,7 @@ fun AnswerCard(
             verticalArrangement = Arrangement.Center
         ) {
             Text(
-                text = if (hasSolution) "答案" else "无解",
+                text = if (hasSolution) answerLabel else noSolutionLabel,
                 style = MaterialTheme.typography.labelLarge,
                 color = if (hasSolution)
                     MaterialTheme.colorScheme.onSecondaryContainer
@@ -70,7 +82,7 @@ fun AnswerCard(
                 )
             } else {
                 Text(
-                    text = "这四个数字无法计算出24",
+                    text = noSolutionMessage,
                     style = MaterialTheme.typography.bodyLarge,
                     color = MaterialTheme.colorScheme.onErrorContainer
                 )

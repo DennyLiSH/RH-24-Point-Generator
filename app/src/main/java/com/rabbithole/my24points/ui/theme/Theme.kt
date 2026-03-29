@@ -30,7 +30,14 @@ private val DarkColorScheme = darkColorScheme(
     background = GameBackgroundDark,
     onBackground = GameOnBackgroundDark,
     surface = GameSurfaceDark,
-    onSurface = GameOnSurfaceDark
+    onSurface = GameOnSurfaceDark,
+    surfaceVariant = GameSurfaceVariantDark,
+    onSurfaceVariant = GameOnSurfaceVariantDark,
+    outline = GameOutlineDark,
+    outlineVariant = GameOutlineVariantDark,
+    inverseSurface = GameInverseSurfaceDark,
+    inverseOnSurface = GameInverseOnSurfaceDark,
+    scrim = GameScrimDark
 )
 
 private val LightColorScheme = lightColorScheme(
@@ -53,11 +60,18 @@ private val LightColorScheme = lightColorScheme(
     background = GameBackground,
     onBackground = GameOnBackground,
     surface = GameSurface,
-    onSurface = GameOnSurface
+    onSurface = GameOnSurface,
+    surfaceVariant = GameSurfaceVariant,
+    onSurfaceVariant = GameOnSurfaceVariant,
+    outline = GameOutline,
+    outlineVariant = GameOutlineVariant,
+    inverseSurface = GameInverseSurface,
+    inverseOnSurface = GameInverseOnSurface,
+    scrim = GameScrim
 )
 
 @Composable
-fun _24PointsTheme(
+fun GameTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
     // Dynamic color is available on Android 12+
     dynamicColor: Boolean = false, // 禁用动态颜色以使用自定义配色

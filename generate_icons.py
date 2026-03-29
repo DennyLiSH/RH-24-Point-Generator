@@ -17,16 +17,35 @@ MIPMAP_SIZES = {
 }
 
 def create_font(size):
-    font_paths = [
-        "C:/Windows/Fonts/arialbd.ttf",
-        "C:/Windows/Fonts/seguisb.ttf",
-        "C:/Windows/Fonts/arial.ttf",
-    ]
+    import platform
+    system = platform.system()
+    font_paths = []
+
+    if system == "Windows":
+        font_dir = os.path.join(os.environ.get("WINDIR", "C:\\Windows"), "Fonts")
+        font_paths = [
+            os.path.join(font_dir, "arialbd.ttf"),
+            os.path.join(font_dir, "seguisb.ttf"),
+            os.path.join(font_dir, "arial.ttf"),
+        ]
+    elif system == "Darwin":
+        font_paths = [
+            "/Library/Fonts/Arial Bold.ttf",
+            "/System/Library/Fonts/Helvetica.ttc",
+            "/Library/Fonts/Arial.ttf",
+        ]
+    else:  # Linux
+        font_paths = [
+            "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf",
+            "/usr/share/fonts/truetype/liberation/LiberationSans-Bold.ttf",
+            "/usr/share/fonts/truetype/freefont/FreeSans.ttf",
+        ]
+
     for path in font_paths:
         if os.path.exists(path):
             try:
                 return ImageFont.truetype(path, size)
-            except:
+            except Exception:
                 continue
     return ImageFont.load_default()
 

@@ -1,10 +1,13 @@
 package com.rabbithole.my24points.viewmodel
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.rabbithole.my24points.solver.GameSolver
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import kotlin.random.Random
 
 /**
@@ -12,7 +15,7 @@ import kotlin.random.Random
  */
 data class GameState(
     val numbers: List<Int> = emptyList(),   // 4个数字
-    val answer: String? = null,              // 解法表达式（可能无解）
+    val answer: String? = null,              // 解法表达式
     val solvable: Boolean = false,           // 是否有解
     val showAnswer: Boolean = false,         // 是否显示答案
     val isGenerating: Boolean = false        // 加载状态
@@ -29,25 +32,27 @@ class GameViewModel : ViewModel() {
      * 生成新题目（保证有解）
      */
     fun generateNewPuzzle() {
-        _state.update { it.copy(isGenerating = true) }
+        viewModelScope.launch(Dispatchers.Default) {
+            _state.update { it.copy(isGenerating = true) }
 
-        var numbers: List<Int>
-        var result: GameSolver.Result
+            var numbers: List<Int>
+            var result: GameSolver.Result
 
-        // 循环生成直到找到有解的题目
-        do {
-            numbers = List(4) { Random.nextInt(1, 14) }
-            result = GameSolver.solve(numbers)
-        } while (!result.solvable)
+            // 循环生成直到找到有解的题目
+            do {
+                numbers = List(4) { Random.nextInt(1, 14) }
+                result = GameSolver.solve(numbers)
+            } while (!result.solvable)
 
-        _state.update {
-            GameState(
-                numbers = numbers,
-                answer = result.expression,
-                solvable = true, // 恒为 true
-                showAnswer = false,
-                isGenerating = false
-            )
+            _state.update {
+                GameState(
+                    numbers = numbers,
+                    answer = result.expression,
+                    solvable = true,
+                    showAnswer = false,
+                    isGenerating = false
+                )
+            }
         }
     }
 

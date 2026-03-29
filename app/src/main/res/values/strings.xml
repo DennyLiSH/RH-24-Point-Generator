@@ -1,3 +1,11 @@
 <resources>
     <string name="app_name">24 points</string>
+    <string name="app_title">24点出题器</string>
+    <string name="hint_long_press">长按屏幕显示答案</string>
+    <string name="button_new_puzzle">生成新题目</string>
+    <string name="answer_label">答案</string>
+    <string name="no_solution_label">无解</string>
+    <string name="no_solution_message">这四个数字无法计算出24</string>
+    <string name="splash_dedication">For my son Rabbit.\n\n-- With Love, MoonBear.DL</string>
+    <string name="number_content_description">数字 %1$d</string>
 </resources>

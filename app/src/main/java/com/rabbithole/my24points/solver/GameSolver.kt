@@ -165,15 +165,30 @@ object GameSolver {
         }
 
         // 去重并排序：乘法优先得分降序 → 括号数量升序
-        val best = allSolutions
+        val uniqueSolutions = allSolutions
             .distinctBy { it.node.toFriendlyString() }
-            .maxWithOrNull(compareBy<Expr> {
-                it.node.multiplicationPriorityScore()
-            }.thenBy {
-                it.node.toFriendlyString().count { c -> c == '(' || c == ')' }
-            })
 
-        return Result(true, best?.node?.toFriendlyString())
+        // 缓存排序所需的计算结果
+        data class ScoredSolution(
+            val expr: Expr,
+            val friendlyString: String,
+            val mulPriority: Int,
+            val parenCount: Int
+        )
+
+        val best = uniqueSolutions
+            .map { expr ->
+                val friendly = expr.node.toFriendlyString()
+                ScoredSolution(
+                    expr = expr,
+                    friendlyString = friendly,
+                    mulPriority = expr.node.multiplicationPriorityScore(),
+                    parenCount = friendly.count { c -> c == '(' || c == ')' }
+                )
+            }
+            .maxWithOrNull(compareBy<ScoredSolution> { it.mulPriority }.thenBy { it.parenCount })
+
+        return Result(true, best?.friendlyString)
     }
 
     /**

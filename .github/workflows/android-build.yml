@@ -17,7 +17,7 @@ on:
 
 env:
   GRADLE_OPTS: "-Dorg.gradle.daemon=false -Dorg.gradle.parallel=true -Dorg.gradle.caching=true"
-  JAVA_VERSION: '11'
+  JAVA_VERSION: '21'
   JAVA_DISTRIBUTION: 'temurin'
 
 jobs:
@@ -57,7 +57,6 @@ jobs:
 
       - name: Run unit tests
         run: ./gradlew test --stacktrace
-        continue-on-error: true
 
       - name: Upload Debug APK
         uses: actions/upload-artifact@v4

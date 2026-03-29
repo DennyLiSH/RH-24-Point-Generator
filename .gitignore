@@ -109,9 +109,10 @@ lint/outputs/
 lint/tmp/
 lint/reports/
 
-# --- Keystore (取消注释以忽略) ---
-#*.jks
-#*.keystore
+# --- Keystore ---
+*.jks
+*.keystore
 
 .claude/
+CLAUDE.md
 _*/
